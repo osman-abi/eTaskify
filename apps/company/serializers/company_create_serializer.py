@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from apps.users.models import BaseUser
 from ..models import Company
 
@@ -23,6 +24,5 @@ class CompanyCreateSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("User is not admin role.")
         user = BaseUser.objects.get(email=user.email)
         company = Company.objects.create(**validated_data)
-        user.company = company
-        user.save()
+        company.users.add(user)
         return company

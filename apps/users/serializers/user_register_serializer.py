@@ -1,4 +1,5 @@
 from rest_framework import serializers
+
 from ..models import BaseUser
 
 
@@ -11,10 +12,11 @@ class UserRegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = BaseUser
-        fields = ('email', 'password', 'first_name', 'last_name')
+        fields = ('email', 'password', 'first_name', 'last_name', 'username')
         extra_kwargs = {
             'first_name': {'required': False},
             'last_name': {'required': False},
+            'username': {'required': False},
         }
 
     def create(self, validated_data):
@@ -24,6 +26,7 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         STAFF user can only log in to our app. NOT registration.
         """
         user = BaseUser.objects.create_superuser(
+            username=validated_data.get('username'),
             email=validated_data.get('email'),
             password=validated_data.get('password'),
             first_name=validated_data.get('first_name'),
@@ -47,4 +50,12 @@ class UserRegisterSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError("Password must be at least 6 characters long.")
         if not any(char.isalpha() for char in value) or not any(char.isdigit() for char in value):
             raise serializers.ValidationError("Password must contain at least one letter and one number.")
+        return value
+
+    def validate_username(self, value):
+        """
+        Validate the username. Username should be unique.
+        """
+        if BaseUser.objects.filter(username=value).exists():
+            raise serializers.ValidationError("Username already exists.")
         return value
