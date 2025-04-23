@@ -1,6 +1,7 @@
 from django.utils import timezone
 from rest_framework import serializers
 
+from apps.users.models import BaseUser
 from ..models import Task
 
 
@@ -8,19 +9,30 @@ class TaskCreateSerializer(serializers.ModelSerializer):
     """
     Serializer for creating a Task.
     """
+    assignee = serializers.ListSerializer(
+        child=serializers.IntegerField(),
+        write_only=True,
+        required=False,
+        help_text="List of user IDs to assign to the task",
+    )
 
     class Meta:
         model = Task
-        fields = ['title', 'description', 'deadline']
+        fields = ['title', 'description', 'deadline', 'assignee']
+        read_only_fields = ['created_by', 'created_at', 'updated_at']
 
     def create(self, validated_data):
         """
         Create and return a new Task instance, including the assignee.
         """
+        assignee_ids = validated_data.pop('assignee', [])
         task = Task.objects.create(**validated_data)
         user = self.context['request'].user
         task.created_by = user
         task.save()
+        if assignee_ids:
+            users = BaseUser.objects.filter(id__in=assignee_ids)
+            task.assignee.set(users)
         return task
 
     def validate_deadline(self, value):
