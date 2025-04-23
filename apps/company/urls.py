@@ -1,10 +1,10 @@
 from rest_framework import routers
 
-from .api import CompanyCreateViewSet
+from .api import CompanyViewSet
 
 # Create a router and register our viewset with it.
 router = routers.DefaultRouter()
-router.register(r'create', CompanyCreateViewSet, basename='company-create')
+router.register(r'', CompanyViewSet, basename='company')
 
 urlpatterns = [
     # Add any additional paths here if needed

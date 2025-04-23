@@ -1,5 +1,5 @@
-from .company_create_viewset import CompanyCreateViewSet
+from .company_viewset import CompanyViewSet
 
 __all__ = [
-    "CompanyCreateViewSet",
+    "CompanyViewSet",
 ]

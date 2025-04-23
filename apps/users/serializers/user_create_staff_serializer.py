@@ -17,6 +17,21 @@ class UserCreateStaffSerializer(serializers.ModelSerializer):
             'last_name': {'required': False},
         }
 
+    def validate(self, attrs):
+        """
+        Validate the input data.
+        """
+        email = attrs.get('email')
+        if not email:
+            raise serializers.ValidationError("Email is required.")
+        if BaseUser.objects.filter(email=email).exists():
+            raise serializers.ValidationError("Email already exists.")
+        if not attrs.get('first_name'):
+            raise serializers.ValidationError("First name is required.")
+        if not attrs.get('last_name'):
+            raise serializers.ValidationError("Last name is required.")
+        return attrs
+
     def create(self, validated_data):
         """
         Create a new staff user with the provided validated data. Staff user can only log in to our app. NOT registration.

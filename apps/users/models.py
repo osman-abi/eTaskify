@@ -6,8 +6,6 @@ from .managers import CustomUserManager
 
 
 class BaseUser(AbstractUser):
-    username = models.CharField(max_length=150, unique=True, blank=True, null=True,
-                                help_text='Username is optional and unique. It can be used for login.')
     first_name = models.CharField(max_length=150, blank=True, null=True)
     last_name = models.CharField(max_length=150, blank=True, null=True)
     email = models.EmailField(unique=True)

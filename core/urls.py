@@ -27,6 +27,8 @@ swagger_patterns = [
 ]
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('api/v1/users/', include('apps.users.urls')),
-] + swagger_patterns
+                  path('admin/', admin.site.urls),
+                  path('api/v1/users/', include('apps.users.urls')),
+                  path('api/v1/company/', include('apps.company.urls')),
+                  path('api/v1/tasks/', include('apps.tasks.urls')),
+              ] + swagger_patterns

@@ -1,9 +1,5 @@
-from .user_create_staff_viewset import UserCreateStaffViewSet
-from .user_register_viewset import UserRegisterViewSet
+from .user_viewset import UserViewSet
 
 __all__ = [
-    "UserRegisterViewSet",
-    "UserCreateStaffViewSet",
+    "UserViewSet",
 ]
-
-# TODO: user logout viewset, user list viewset

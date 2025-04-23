@@ -1,10 +1,10 @@
 from rest_framework import viewsets, mixins, status
-from rest_framework.response import Response
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 
-from ..serializers import TaskCreateSerializer, TaskSerializer, TaskUpdateSerializer, TaskAssignSerializer
 from ..models import Task
+from ..serializers import TaskCreateSerializer, TaskSerializer, TaskUpdateSerializer, TaskAssignSerializer
 
 
 class TaskViewSet(mixins.CreateModelMixin,
@@ -20,6 +20,18 @@ class TaskViewSet(mixins.CreateModelMixin,
     serializer_class = TaskCreateSerializer
     permission_classes = [IsAuthenticated]
     lookup_field = 'id'
+
+    def get_serializer_class(self):
+        """
+        Return the appropriate serializer class based on the action.
+        """
+        if self.action == 'create':
+            return TaskCreateSerializer
+        elif self.action == 'partial_update':
+            return TaskUpdateSerializer
+        elif self.action == 'assign':
+            return TaskAssignSerializer
+        return TaskSerializer
 
     def create(self, request, *args, **kwargs):
         """
@@ -43,13 +55,13 @@ class TaskViewSet(mixins.CreateModelMixin,
         Retrieve a task instance.
         """
         instance = self.get_object()
-        serializer = TaskSerializer(instance)
+        serializer = self.get_serializer(instance)
         return Response(serializer.data)
 
     def partial_update(self, request, *args, **kwargs):
         """
         Update a task instance.
-        request.data should contain the fields to update the task.
+        request.data should contain one of the fields or all fields to update the task.
 
         Example:
         {
@@ -60,7 +72,7 @@ class TaskViewSet(mixins.CreateModelMixin,
         }
         """
         instance = self.get_object()
-        serializer = TaskUpdateSerializer(instance, data=request.data, partial=True)
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -85,7 +97,7 @@ class TaskViewSet(mixins.CreateModelMixin,
         }
         """
         instance = self.get_object()
-        serializer = TaskAssignSerializer(instance, data=request.data, partial=True)
+        serializer = self.get_serializer(instance, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         self.perform_update(serializer)
         return Response(serializer.data, status=status.HTTP_200_OK)
