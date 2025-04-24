@@ -1,4 +1,5 @@
 from rest_framework import serializers
+from django.core.validators import EmailValidator
 
 from ..models import BaseUser
 
@@ -13,10 +14,6 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = BaseUser
         fields = ('email', 'password', 'first_name', 'last_name')
-        extra_kwargs = {
-            'first_name': {'required': False},
-            'last_name': {'required': False},
-        }
 
     def create(self, validated_data):
         """
@@ -32,25 +29,48 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         )
         return user
 
-    def validate(self, attrs):
+    def validate_email(self, value):
         """
-        Validate the input data.
+        Validate the email address.
         """
-        email = attrs.get('email')
-        if not email:
-            raise serializers.ValidationError("Email is required.")
-        if BaseUser.objects.filter(email=email).exists():
+        if not value:
+            raise serializers.ValidationError("This field may not be blank.")
+        if BaseUser.objects.filter(email=value).exists():
             raise serializers.ValidationError("Email already exists.")
-        if not attrs.get('first_name'):
-            raise serializers.ValidationError("First name is required.")
-        if not attrs.get('last_name'):
-            raise serializers.ValidationError("Last name is required.")
-        if not attrs.get('password'):
-            raise serializers.ValidationError("Password is required.")
-        if len(attrs.get('password')) < 6 and \
-                not any(char.isalpha() for char in attrs.get('password')) and \
-                not any(char.isdigit() for char in attrs.get('password')):
-            raise serializers.ValidationError(
-                "Password must be at least 6 characters long and contain at least one letter and one number.")
+        try:
+            EmailValidator()(value)
+        except serializers.ValidationError:
+            raise serializers.ValidationError("Invalid email format.")
 
-        return attrs
+        return value
+
+    def validate_password(self, value):
+        """
+        Validate the password.
+        """
+        if len(value) < 6:
+            raise serializers.ValidationError("Password must be at least 6 characters long.")
+        if not any(char.isdigit() for char in value):
+            raise serializers.ValidationError("Password must contain at least one number.")
+        if not any(char.isalpha() for char in value):
+            raise serializers.ValidationError("Password must contain at least one letter.")
+        if not value:
+            raise serializers.ValidationError("This field may not be blank.")
+
+        return value
+
+    def validate_first_name(self, value):
+        """
+        Validate the first name.
+        """
+        if not value:
+            raise serializers.ValidationError("First name may not be blank.")
+        return value
+
+    def validate_last_name(self, value):
+        """
+        Validate the last name.
+        """
+        if not value:
+            raise serializers.ValidationError("Last name may not be blank.")
+        return value

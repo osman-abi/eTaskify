@@ -40,12 +40,11 @@ class UserCreateStaffSerializer(serializers.ModelSerializer):
             email=validated_data.get('email'),
             first_name=validated_data.get('first_name'),
             last_name=validated_data.get('last_name'),
+            company=self.context['request'].user.company
         )
         request_user = self.context['request'].user
         if not request_user.is_authenticated:
             raise serializers.ValidationError("User is not authenticated.")
         if not request_user.is_admin:
             raise serializers.ValidationError("User is not admin role.")
-        user.company = request_user.company
-        user.save()
         return user

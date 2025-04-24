@@ -31,6 +31,8 @@ ALLOWED_HOSTS = ["*"]
 
 LOCAL_APPS = [
     'apps.users.apps.UserConfig',
+    'apps.company.apps.CompanyConfig',
+    'apps.tasks.apps.TaskConfig',
 ]
 
 THIRD_PARTY_APPS = [
@@ -38,7 +40,7 @@ THIRD_PARTY_APPS = [
     'rest_framework_simplejwt',
     'corsheaders',
     'rest_framework_simplejwt.token_blacklist',
-    'drf_spectacular',
+    'drf_spectacular'
 ]
 
 INSTALLED_APPS = [
@@ -120,6 +122,9 @@ REST_FRAMEWORK = {
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ),
     'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ],
 }
 
 SIMPLE_JWT = {
@@ -145,16 +150,21 @@ SPECTACULAR_SETTINGS = {
     'DESCRIPTION': 'eTaskify description',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
+    "COMPONENT_SPLIT_REQUEST": True,
+    'SCHEMA_PATH_PREFIX': '/api/v1',
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.AllowAny"]
     # OTHER SETTINGS
 }
 
 # Email settings
-
+##############################################3
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'live.smtp.mailtrap.io'  # SMTP server host
-EMAIL_PORT = 587  # SMTP server port (587 for TLS, 465 for SSL)
-EMAIL_HOST_USER = 'smtp@mailtrap.io'  # SMTP server username
-EMAIL_HOST_PASSWORD = 'e2bf83685d357dbb0904d443300eefd4'  # SMTP server password
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = ...
+EMAIL_HOST_PASSWORD = ...
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
@@ -171,6 +181,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+
+# MEDIA
+# ------------------------------------------------------------------------------
+# https://docs.djangoproject.com/en/dev/ref/settings/#media-root
+MEDIA_ROOT = str(BASE_DIR / "media")
+# https://docs.djangoproject.com/en/dev/ref/settings/#media-url
+MEDIA_URL = "/media/"
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field

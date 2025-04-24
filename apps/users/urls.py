@@ -6,7 +6,7 @@ from .api import UserViewSet
 
 # Create a router and register our viewset with it.
 router = routers.DefaultRouter()
-router.register(r'', UserViewSet, basename='user-list')
+router.register(r'', UserViewSet, basename='user')
 
 urlpatterns = [
     path('login/', TokenObtainPairView.as_view(), name='token_obtain_pair'),

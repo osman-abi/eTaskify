@@ -10,12 +10,13 @@ from ..models import Company
 from ..serializers import CompanyCreateSerializer
 
 
-class CompanyViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+class CompanyViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
     """
     ViewSet for creating a new company.
     """
     queryset = Company.objects.all()
-    http_method_names = ['post']
+    http_method_names = ['post', 'get']
+    permission_classes = [IsAuthenticated]
 
     def get_serializer_class(self):
         """
@@ -32,6 +33,7 @@ class CompanyViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         if self.action == 'create':
             self.permission_classes = [IsAdmin]
         self.permission_classes = [IsAuthenticated]
+        return super().get_permissions()
 
     def create(self, request, *args, **kwargs):
         """

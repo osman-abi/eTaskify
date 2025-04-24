@@ -26,6 +26,7 @@ class CustomUserManager(BaseUserManager):
         """
         extra_fields.setdefault('is_staff', True)
         extra_fields.setdefault('is_admin', True)
+        extra_fields.setdefault('is_superuser', True)
 
         if extra_fields.get('is_staff') is not True:
             raise ValueError('Superuser must have is_staff=True.')
@@ -50,7 +51,8 @@ class CustomUserManager(BaseUserManager):
 
         user = self.create_user(email, password, **extra_fields)
         # # Send email to user with the password
-        self._send_email_to_staff(user.email, password, fullname=user.get_full_name(), company_name=user.company.name)
+        self._send_email_to_staff(user.email, password, fullname=user.get_full_name(),
+                                  company_name=extra_fields.get('company'))
         return user
 
     def _send_email_to_staff(self, staff_email: str, password: str, fullname: str, company_name: str) -> None:

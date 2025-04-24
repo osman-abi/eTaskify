@@ -6,8 +6,4 @@ from .api import CompanyViewSet
 router = routers.DefaultRouter()
 router.register(r'', CompanyViewSet, basename='company')
 
-urlpatterns = [
-    # Add any additional paths here if needed
-]
-
-urlpatterns += router.urls
+urlpatterns = router.urls

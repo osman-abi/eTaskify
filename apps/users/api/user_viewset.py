@@ -1,6 +1,6 @@
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 
 from permissions import IsAdmin
@@ -16,7 +16,7 @@ class UserViewSet(mixins.ListModelMixin,
     """
     queryset = BaseUser.objects.all()
     serializer_class = UserListSerializer
-    http_method_names = ['get']
+    http_method_names = ['get', 'post']
     permission_classes = [IsAuthenticated]
 
     def get_permissions(self):
@@ -27,7 +27,7 @@ class UserViewSet(mixins.ListModelMixin,
         if self.action == 'staff':
             self.permission_classes = [IsAdmin]
         elif self.action == 'register':
-            self.permission_classes = []
+            self.permission_classes = [AllowAny]
         return super().get_permissions()
 
     def get_serializer_class(self):
@@ -36,15 +36,15 @@ class UserViewSet(mixins.ListModelMixin,
         """
         # validate due to endpoints
         if self.action == 'list':
-            return UserListSerializer
+            self.serializer_class = UserListSerializer
         elif self.action == 'me':
-            return UserListSerializer
+            self.serializer_class = UserListSerializer
         elif self.action == 'staff':
-            return UserCreateStaffSerializer
+            self.serializer_class = UserCreateStaffSerializer
         elif self.action == 'register':
-            return UserRegisterSerializer
+            self.serializer_class = UserRegisterSerializer
         elif self.action == 'logout':
-            return UserLogoutSerializer
+            self.serializer_class = UserLogoutSerializer
         return super().get_serializer_class()
 
     def list(self, request, *args, **kwargs):
@@ -64,7 +64,7 @@ class UserViewSet(mixins.ListModelMixin,
         serializer = self.get_serializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=['get'], url_path='staff')
+    @action(detail=False, methods=['post'], url_path='staff')
     def staff(self, request):
         """
         Handle GET requests to retrieve the list of staff users.

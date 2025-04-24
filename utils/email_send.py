@@ -20,7 +20,7 @@ class EmailData:
         email = EmailMessage(
             subject=subject,
             body=html_content,
-            from_email=settings.EMAIL_HOST_USER,
+            from_email="demo@example.com",
             to=self.email_to,
         )
         # Send the email
