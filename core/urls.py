@@ -16,7 +16,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from drf_spectacular.views import SpectacularAPIView, SpectacularRedocView, SpectacularSwaggerView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
+
+API_PREFIX = "api/v1"
 
 swagger_patterns = [
     # YOUR PATTERNS
@@ -27,7 +29,7 @@ swagger_patterns = [
 
 urlpatterns = [
                   path('admin/', admin.site.urls),
-                  path('api/v1/company/', include('apps.company.urls')),
-                  path('api/v1/users/', include('apps.users.urls')),
-                  path('api/v1/tasks/', include('apps.tasks.urls')),
+                  path(f'{API_PREFIX}/company/', include('apps.company.urls')),
+                  path(f'{API_PREFIX}/users/', include('apps.users.urls')),
+                  path(f'{API_PREFIX}/tasks/', include('apps.tasks.urls')),
               ] + swagger_patterns

@@ -23,9 +23,13 @@ class CompanyViewSet(viewsets.GenericViewSet, mixins.CreateModelMixin):
         """
         Return the appropriate serializer class based on the action.
         """
-        if self.action == "create":
-            return CompanyCreateSerializer
-        return TaskSerializer
+
+        serializers = {
+            "create": CompanyCreateSerializer,
+            "tasks": TaskSerializer,
+        }
+
+        return serializers.get(self.action)
 
     def get_permissions(self):
         """

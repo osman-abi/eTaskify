@@ -32,25 +32,16 @@ class TaskViewSet(
         """
         Return the appropriate serializer class based on the action.
         """
-        if self.action == "create":
-            return TaskCreateSerializer
-        elif self.action == "partial_update":
-            return TaskUpdateSerializer
-        elif self.action == "assign":
-            return TaskAssignSerializer
-        return TaskSerializer
+        serializers = {
+            "create": TaskCreateSerializer,
+            "partial_update": TaskUpdateSerializer,
+            "assign": TaskAssignSerializer,
+        }
+        return serializers.get(self.action, TaskSerializer)
 
     def create(self, request, *args, **kwargs):
         """
-        Create a new task instance.
-        request.data should contain the fields to create the task.
-
-        Example:
-        {
-            "title": "New Task",
-            "description": "Task description",
-            "deadline": "2023-12-31T23:59:59Z"
-        }
+        Handle POST requests to create a new task instance.
         """
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -68,15 +59,6 @@ class TaskViewSet(
     def partial_update(self, request, *args, **kwargs):
         """
         Update a task instance.
-        request.data should contain one of the fields or all fields to update the task.
-
-        Example:
-        {
-            "title": "Updated Task Title",
-            "description": "Updated description",
-            "status": "completed",
-            "deadline": "2023-12-31T23:59:59Z"
-        }
         """
         instance = self.get_object()
         serializer = self.get_serializer(instance, data=request.data, partial=True)
@@ -95,13 +77,7 @@ class TaskViewSet(
     @action(detail=True, methods=['put'], url_path='assign')
     def assign(self, request, *args, **kwargs):
         """
-        Assign users to a task.
-        request.data should contain a list of user IDs to assign to the task.
-
-        Example:
-        {
-            "assignee": [1, 2, 3]
-        }
+        Assign users to a task. Request data should contain a list of user IDs to assign to the task.
         """
         print("request.data >>>> ", request.data)
         instance = self.get_object()

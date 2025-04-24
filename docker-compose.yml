@@ -1,0 +1,32 @@
+services:
+
+  app:
+    image: e_taskify
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+
+  app_migrate:
+    extends:
+      service: app
+    command: >
+      bash -c "python manage.py migrate --noinput && python manage.py collectstatic --noinput"
+
+  app_test:
+    extends:
+      service: app
+    command: >
+      bash -c "coverage run -m pytest && coverage report -m"
+
+  app_run:
+    extends:
+      service: app
+    ports:
+      - "8000:8000"
+    entrypoint: >
+      bash -c "python manage.py runserver 0.0.0.0:8000"
+

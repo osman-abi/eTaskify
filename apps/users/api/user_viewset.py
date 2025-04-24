@@ -22,7 +22,7 @@ class UserViewSet(
 
     queryset = BaseUser.objects.all()
     serializer_class = UserListSerializer
-    http_method_names = ["get", "post"]
+    # http_method_names = ["get", "post"]
     permission_classes = [IsAuthenticated]
 
     def get_permissions(self):
@@ -30,27 +30,28 @@ class UserViewSet(
         Assign permissions based on the action.
         """
 
-        if self.action == "staff":
-            self.permission_classes = [IsAdmin]
-        elif self.action == "register":
-            self.permission_classes = [AllowAny]
+        permissions = {
+            "list": [IsAuthenticated],
+            "me": [IsAuthenticated],
+            "staff": [IsAdmin],
+            "register": [AllowAny],
+            "logout": [IsAuthenticated],
+        }
+        self.permission_classes = permissions.get(self.action, [IsAuthenticated])
         return super().get_permissions()
 
     def get_serializer_class(self):
         """
         Return the appropriate serializer class based on the action.
         """
-        # validate due to endpoints
-        if self.action == "list":
-            self.serializer_class = UserListSerializer
-        elif self.action == "me":
-            self.serializer_class = UserListSerializer
-        elif self.action == "staff":
-            self.serializer_class = UserCreateStaffSerializer
-        elif self.action == "register":
-            self.serializer_class = UserRegisterSerializer
-        elif self.action == "logout":
-            self.serializer_class = UserLogoutSerializer
+        serializers = {
+            "list": UserListSerializer,
+            "me": UserListSerializer,
+            "staff": UserCreateStaffSerializer,
+            "register": UserRegisterSerializer,
+            "logout": UserLogoutSerializer,
+        }
+        self.serializer_class = serializers.get(self.action, self.serializer_class)
         return super().get_serializer_class()
 
     def list(self, request, *args, **kwargs):
