@@ -4,6 +4,7 @@ from .api import CompanyViewSet
 
 # Create a router and register our viewset with it.
 router = routers.DefaultRouter()
-router.register(r'', CompanyViewSet, basename='company')
+router.register(r"", CompanyViewSet, basename="company")
 
-urlpatterns = router.urls
+urlpatterns = []
+urlpatterns += router.urls

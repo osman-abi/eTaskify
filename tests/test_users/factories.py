@@ -21,3 +21,4 @@ class UserFactory(DjangoModelFactory):
     is_active = True
     is_staff = False
     is_superuser = False
+    is_admin = False

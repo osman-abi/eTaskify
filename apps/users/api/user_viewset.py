@@ -5,18 +5,24 @@ from rest_framework.response import Response
 
 from permissions import IsAdmin
 from ..models import BaseUser
-from ..serializers import UserListSerializer, UserCreateStaffSerializer, UserRegisterSerializer, UserLogoutSerializer
+from ..serializers import (
+    UserListSerializer,
+    UserCreateStaffSerializer,
+    UserRegisterSerializer,
+    UserLogoutSerializer,
+)
 
 
-class UserViewSet(mixins.ListModelMixin,
-                  mixins.CreateModelMixin,
-                  viewsets.GenericViewSet):
+class UserViewSet(
+    mixins.ListModelMixin, mixins.CreateModelMixin, viewsets.GenericViewSet
+):
     """
     ViewSet for listing users.
     """
+
     queryset = BaseUser.objects.all()
     serializer_class = UserListSerializer
-    http_method_names = ['get', 'post']
+    http_method_names = ["get", "post"]
     permission_classes = [IsAuthenticated]
 
     def get_permissions(self):
@@ -24,9 +30,9 @@ class UserViewSet(mixins.ListModelMixin,
         Assign permissions based on the action.
         """
 
-        if self.action == 'staff':
+        if self.action == "staff":
             self.permission_classes = [IsAdmin]
-        elif self.action == 'register':
+        elif self.action == "register":
             self.permission_classes = [AllowAny]
         return super().get_permissions()
 
@@ -35,15 +41,15 @@ class UserViewSet(mixins.ListModelMixin,
         Return the appropriate serializer class based on the action.
         """
         # validate due to endpoints
-        if self.action == 'list':
+        if self.action == "list":
             self.serializer_class = UserListSerializer
-        elif self.action == 'me':
+        elif self.action == "me":
             self.serializer_class = UserListSerializer
-        elif self.action == 'staff':
+        elif self.action == "staff":
             self.serializer_class = UserCreateStaffSerializer
-        elif self.action == 'register':
+        elif self.action == "register":
             self.serializer_class = UserRegisterSerializer
-        elif self.action == 'logout':
+        elif self.action == "logout":
             self.serializer_class = UserLogoutSerializer
         return super().get_serializer_class()
 
@@ -55,7 +61,7 @@ class UserViewSet(mixins.ListModelMixin,
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=['get'], url_path='me')
+    @action(detail=False, methods=["get"], url_path="me")
     def me(self, request):
         """
         Handle GET requests to retrieve the current user's information.
@@ -64,7 +70,7 @@ class UserViewSet(mixins.ListModelMixin,
         serializer = self.get_serializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    @action(detail=False, methods=['post'], url_path='staff')
+    @action(detail=False, methods=["post"], url_path="staff")
     def staff(self, request):
         """
         Handle GET requests to retrieve the list of staff users.
@@ -74,7 +80,7 @@ class UserViewSet(mixins.ListModelMixin,
         self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @action(detail=False, methods=['post'], url_path='register')
+    @action(detail=False, methods=["post"], url_path="register")
     def register(self, request):
         """
         Handle POST requests to register a new user.
@@ -84,7 +90,7 @@ class UserViewSet(mixins.ListModelMixin,
         self.perform_create(serializer)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    @action(detail=False, methods=['post'], url_path='logout')
+    @action(detail=False, methods=["post"], url_path="logout")
     def logout(self, request):
         """
         Handle POST requests to log out the current user.

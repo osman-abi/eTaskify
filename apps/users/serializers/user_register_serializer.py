@@ -1,5 +1,5 @@
-from rest_framework import serializers
 from django.core.validators import EmailValidator
+from rest_framework import serializers
 
 from ..models import BaseUser
 
@@ -8,12 +8,13 @@ class UserRegisterSerializer(serializers.ModelSerializer):
     """
     Serializer for user registration.
     """
+
     password = serializers.CharField(write_only=True, required=True)
     email = serializers.EmailField(required=True)
 
     class Meta:
         model = BaseUser
-        fields = ('email', 'password', 'first_name', 'last_name')
+        fields = ("email", "password", "first_name", "last_name")
 
     def create(self, validated_data):
         """
@@ -22,10 +23,10 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         STAFF user can only log in to our app. NOT registration.
         """
         user = BaseUser.objects.create_superuser(
-            email=validated_data.get('email'),
-            password=validated_data.get('password'),
-            first_name=validated_data.get('first_name'),
-            last_name=validated_data.get('last_name'),
+            email=validated_data.get("email"),
+            password=validated_data.get("password"),
+            first_name=validated_data.get("first_name"),
+            last_name=validated_data.get("last_name"),
         )
         return user
 
@@ -49,11 +50,17 @@ class UserRegisterSerializer(serializers.ModelSerializer):
         Validate the password.
         """
         if len(value) < 6:
-            raise serializers.ValidationError("Password must be at least 6 characters long.")
+            raise serializers.ValidationError(
+                "Password must be at least 6 characters long."
+            )
         if not any(char.isdigit() for char in value):
-            raise serializers.ValidationError("Password must contain at least one number.")
+            raise serializers.ValidationError(
+                "Password must contain at least one number."
+            )
         if not any(char.isalpha() for char in value):
-            raise serializers.ValidationError("Password must contain at least one letter.")
+            raise serializers.ValidationError(
+                "Password must contain at least one letter."
+            )
         if not value:
             raise serializers.ValidationError("This field may not be blank.")
 

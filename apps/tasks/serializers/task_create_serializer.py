@@ -9,6 +9,7 @@ class TaskCreateSerializer(serializers.ModelSerializer):
     """
     Serializer for creating a Task.
     """
+
     assignee = serializers.ListSerializer(
         child=serializers.IntegerField(),
         write_only=True,
@@ -18,16 +19,20 @@ class TaskCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Task
-        fields = ['title', 'description', 'deadline', 'assignee']
-        read_only_fields = ['created_by', 'created_at', 'updated_at']
+        fields = ["title", "description", "deadline", "assignee", "status"]
+        read_only_fields = ["created_by", "created_at", "updated_at", "status"]
 
     def create(self, validated_data):
         """
         Create and return a new Task instance, including the assignee.
         """
-        assignee_ids = validated_data.pop('assignee', [])
-        task = Task.objects.create(**validated_data)
-        user = self.context['request'].user
+        assignee_ids = validated_data.pop("assignee", [])
+        company = self.context["request"].user.company
+        created_by = self.context["request"].user
+        task = Task.objects.create(
+            company=company, created_by=created_by, **validated_data
+        )
+        user = self.context["request"].user
         task.created_by = user
         task.save()
         if assignee_ids:

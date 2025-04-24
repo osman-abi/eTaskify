@@ -1,7 +1,7 @@
 from django.db import models
 
-from apps.users.models import BaseUser
 from apps.company.models import Company
+from apps.users.models import BaseUser
 
 
 class Task(models.Model):
@@ -10,20 +10,32 @@ class Task(models.Model):
     """
 
     STATUS_CHOICES = [
-        ('pending', 'Pending'),
-        ('in_progress', 'In Progress'),
-        ('completed', 'Completed'),
+        ("pending", "Pending"),
+        ("in_progress", "In Progress"),
+        ("completed", "Completed"),
     ]
 
-    assignee = models.ManyToManyField(BaseUser, related_name='tasks', blank=True,
-                                      help_text="Users assigned to this task")
-    created_by = models.ForeignKey(BaseUser, on_delete=models.CASCADE, related_name='created_tasks',
-                                   help_text="User who created this task")
-    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='tasks',
-                                help_text="Company this task belongs to")
+    assignee = models.ManyToManyField(
+        BaseUser,
+        related_name="tasks",
+        blank=True,
+        help_text="Users assigned to this task",
+    )
+    created_by = models.ForeignKey(
+        BaseUser,
+        on_delete=models.CASCADE,
+        related_name="created_tasks",
+        help_text="User who created this task",
+    )
+    company = models.ForeignKey(
+        Company,
+        on_delete=models.CASCADE,
+        related_name="tasks",
+        help_text="Company this task belongs to",
+    )
     title = models.CharField(max_length=255)
     description = models.TextField()
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="pending")
     deadline = models.DateTimeField()
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

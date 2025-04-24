@@ -9,13 +9,13 @@ class UserLogoutSerializer(serializers.Serializer):
 
     refresh_token = serializers.CharField()
 
-    def validate(self, attrs):
+    def validate_refresh_token(self, value):
         """
         Validate the refresh token.
         """
-        refresh_token = attrs.get("refresh")
-        if not refresh_token:
-            raise serializers.ValidationError("Refresh token is required.")
+        if not value:
+            raise serializers.ValidationError("This field is required.")
+        return value
 
     def save(self, **kwargs):
         """

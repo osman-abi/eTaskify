@@ -11,20 +11,19 @@ class TaskAssignSerializer(serializers.ModelSerializer):
     """
 
     assignee = serializers.ListSerializer(
-        child=serializers.IntegerField(),
-        write_only=True,
+        child=serializers.CharField(),
         help_text="List of user IDs to assign to the task"
     )
 
     class Meta:
         model = Task
-        fields = ['assignee']
-        read_only_fields = ['created_by', 'created_at', 'updated_at']
+        fields = ["assignee"]
 
     def validate_assignee(self, value):
         """
         Validate the list of assignee IDs.
         """
+        print("value >>>> ", value)
         if not isinstance(value, list):
             raise serializers.ValidationError("Assignee must be a list of user IDs.")
         if len(value) == 0:
@@ -35,20 +34,26 @@ class TaskAssignSerializer(serializers.ModelSerializer):
         """
         Update the task instance with the new assignee.
         """
-        assignee_ids = validated_data.get('assignee', [])
+        assignee_ids = validated_data.get("assignee", [])
+        print("assignee_ids >>>> ", assignee_ids)
         users = BaseUser.objects.filter(id__in=assignee_ids)
+        print("users >>>> ", users)  # Debugging line
         instance.assignee.set(users)
         instance.save()
-        assignee_emails = list(users.values_list('email', flat=True))
+        assignee_emails = list(users.values_list("email", flat=True))
         self._send_email_to_assignee(assignee_emails, instance.id, instance.title)
         return instance
 
-    def _send_email_to_assignee(self, assignee: list, task_id: int, task_title: str) -> None:
+    def _send_email_to_assignee(
+            self, assignee: list, task_id: int, task_title: str
+    ) -> None:
         """
         Send an email to the assignee.
         """
         # Implement email sending logic here
         if not assignee:
             raise ValueError("Assignee list cannot be empty.")
-        email_data = EmailData(email_to=assignee, task_id=task_id, task_title=task_title)
+        email_data = EmailData(
+            email_to=assignee, task_id=task_id, task_title=task_title
+        )
         email_data.send_task_assigned_email()

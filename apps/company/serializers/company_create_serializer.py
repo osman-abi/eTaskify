@@ -11,13 +11,13 @@ class CompanyCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Company
-        fields = ('name', 'address', 'phone_number')
+        fields = ("name", "address", "phone_number")
 
     def create(self, validated_data):
         """
         Create a new company with the provided validated data.
         """
-        user = self.context['request'].user
+        user = self.context["request"].user
         if not user.is_authenticated:
             raise serializers.ValidationError("User is not authenticated.")
         if not user.is_admin:
