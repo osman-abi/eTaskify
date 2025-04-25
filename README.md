@@ -170,6 +170,13 @@ cd eTaskify
 docker compose up --build -d
 ```
 
+### After building you need to create super user 
+
+```bash
+docker exec -it ${container_name} bash
+python manage.py createsuperuser
+```
+
 # **Note** 
 
 ## __Test coverage is 96%. If you want to see this result build project as below:__
