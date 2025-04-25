@@ -1,4 +1,3 @@
 ./venv
-.env
 .coverage
 db.sqlite3
