@@ -128,6 +128,19 @@ This project provides a task management solution as a SaaS platform.
 
 ## Getting Started
 
+### API Documentation
+
+Base URL: `http://localhost:8000/api/v1`
+
+### Authentication
+
+
+All endpoints (except /users/register/) require a Bearer token in the `Authorization` header:
+
+```http
+Authorization: Bearer <your_token>
+```
+
 ### Prerequisites
 
 Make sure you have installed:
